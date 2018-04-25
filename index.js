@@ -1,28 +1,32 @@
-'use strict';
+"use strict";
 
-var isIP = require('validator').isIP;
-var Address = require('./lib/address');
-var IP = require('./lib/ip');
-var request = require('request');
-var Result = require('./lib/result');
+var isIP = require("validator").isIP;
+var Address = require("./lib/address");
+var IP = require("./lib/ip");
+var request = require("request");
+var Result = require("./lib/result");
 
 /*
  * callback: fn(err, result);
  */
-var is = function(ipOrAddress, callback) {
+var is = function(ipOrAddress, apikey, callback) {
   var locator;
   var opts;
+
+  if (typeof apikey === "function") {
+    throw "api Keys Required";
+  }
 
   if (!ipOrAddress) {
     return callback(null, new Result());
   } else if (isIP(ipOrAddress)) {
-    locator = new IP(ipOrAddress);
+    locator = new IP(ipOrAddress, apikey.ip);
   } else {
-    locator = new Address(ipOrAddress);
+    locator = new Address(ipOrAddress, apikey.address);
   }
 
   opts = {
-    method: 'GET',
+    method: "GET",
     url: locator.url,
     json: true
   };
